@@ -1,0 +1,36 @@
+name: Publish to Smithery
+
+on:
+  push:
+    tags:
+      - "v*" # Triggers on version tags like v1.0.0, v1.2.3
+  workflow_dispatch: # Allows manual triggering
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Validate MCP server
+        run: |
+          # Basic validation - ensure server can be imported
+          python -c "from server import mcp; print('MCP server validated successfully')"
+
+      - name: Publish to Smithery
+        uses: smithery-ai/publish@v1
+        with:
+          smithery-api-key: ${{ secrets.SMITHERY_API_KEY }}
+          # The package name from your README: io.github.csgear/bitbucket-agent
+          package-name: "io.github.csgear/bitbucket-agent"
