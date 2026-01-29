@@ -1,4 +1,4 @@
-name: Publish to Smithery
+name: Create Release
 
 on:
   push:
@@ -27,10 +27,12 @@ jobs:
         run: |
           # Basic validation - ensure server can be imported
           python -c "from server import mcp; print('MCP server validated successfully')"
-
-      - name: Publish to Smithery
-        uses: smithery-ai/publish@v1
+          
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
         with:
-          smithery-api-key: ${{ secrets.SMITHERY_API_KEY }}
-          # The package name from your README: io.github.csgear/bitbucket-agent
-          package-name: "io.github.csgear/bitbucket-agent"
+          generate_release_notes: true
+          draft: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
